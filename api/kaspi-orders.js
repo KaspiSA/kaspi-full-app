@@ -1,19 +1,22 @@
 
-const axios = require("axios");
+const KASPI_API_KEY = process.env.KASPI_API_KEY;
 
-module.exports = async (req, res) => {
-  const API_KEY = process.env.KASPI_API_KEY;
-
-  try {
-    const response = await axios.get("https://kaspi.kz/shop/api/v2/orders", {
+export default async function handler(req, res) {
+  const response = await fetch(
+    "https://kaspi.kz/shop/api/v2/orders?page[number]=1&page[size]=10&filter[orders][creationDate][$ge]=2024-04-01T00:00:00",
+    {
       headers: {
         "Content-Type": "application/json",
-        "X-Auth-Token": API_KEY
-      }
-    });
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Ошибка:", error.response?.data || error.message);
-    res.status(500).json({ error: "Ошибка при получении заказов" });
+        "X-Auth-Token": KASPI_API_KEY,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return res.status(response.status).json({ error: data });
   }
-};
+
+  return res.status(200).json(data);
+}
