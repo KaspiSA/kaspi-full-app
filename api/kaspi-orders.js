@@ -2,15 +2,14 @@
 const KASPI_API_KEY = process.env.KASPI_API_KEY;
 
 export default async function handler(req, res) {
-  const response = await fetch(
-    "https://kaspi.kz/shop/api/v2/orders?page[number]=1&page[size]=10&filter[orders][creationDate][$ge]=2024-04-01T00:00:00.000Z",
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Auth-Token": KASPI_API_KEY,
-      },
-    }
-  );
+  const url = "https://kaspi.kz/shop/api/v2/orders?page[number]=1&page[size]=10&filter[orders][creationDate][$ge]=1711929600000";
+
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      "X-Auth-Token": KASPI_API_KEY,
+    },
+  });
 
   const data = await response.json();
 
@@ -20,5 +19,6 @@ export default async function handler(req, res) {
 
   return res.status(200).json(data);
 }
+
 
 
