@@ -1,21 +1,24 @@
-export default function handler(req, res) {
-  // Пример мок-данных — заменить на реальную интеграцию с Kaspi API
-  res.status(200).json({
-    orders: [
-      {
-        id: "001",
-        customer: { firstName: "Айбар" },
-        totalPrice: 10000,
-        status: "COMPLETED",
-        creationDate: Date.now() - 86400000 * 1
+export default async function handler(req, res) {
+  const token = process.env.KASPI_AUTH_TOKEN; // Вставь свой токен в .env
+
+  const start = new Date();
+  start.setDate(start.getDate() - 3); // последние 3 дня
+  const fromDate = start.toISOString();
+
+  try {
+    const response = await fetch("https://kaspi.kz/shop/api/v2/orders", {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": token,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
       },
-      {
-        id: "002",
-        customer: { firstName: "Аружан" },
-        totalPrice: 15000,
-        status: "PROCESSING",
-        creationDate: Date.now()
-      }
-    ]
-  });
+    });
+
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Ошибка Kaspi API:", err);
+    res.status(500).json({ error: "Ошибка получения заказов" });
+  }
 }
