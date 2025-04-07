@@ -1,10 +1,3 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/kaspi-orders.js", "use": "@vercel/node" },
-    { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "build" } }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/kaspi-orders.js" }
-  ]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/$1.js" }]
 }

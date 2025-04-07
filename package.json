@@ -1,17 +1,17 @@
 {
-  "name": "kaspi-seller-full",
+  "name": "kaspi-full-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "react-scripts start",
-    "build": "react-scripts build",
-    "start": "react-scripts start"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.6.0",
-    "chart.js": "^4.3.0",
     "react": "^18.2.0",
-    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-router-dom": "^6.21.2"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0"
   }
 }
