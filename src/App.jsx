@@ -1,32 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import Orders from "./pages/Orders.jsx";
 
 export default function App() {
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    fetch("/api/kaspi-orders")
-      .then(res => res.json())
-      .then(data => {
-        console.log("Заказы:", data);
-        setOrders(data.orders || []);
-      });
-  }, []);
-
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Kaspi Seller Assistant</h1>
-      <h2>Список заказов:</h2>
-      {orders.length === 0 ? (
-        <p>Загрузка заказов...</p>
-      ) : (
-        <ul>
-          {orders.map((order, index) => (
-            <li key={index}>
-              № {order.id} — {order.customer?.firstName || "Без имени"} ({order.status})
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Router>
+      <nav style={{ padding: 10, background: "#eee" }}>
+        <Link to="/" style={{ marginRight: 10 }}>Главная</Link>
+        <Link to="/orders" style={{ marginRight: 10 }}>Заказы</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/orders" element={<Orders />} />
+      </Routes>
+    </Router>
   );
 }
