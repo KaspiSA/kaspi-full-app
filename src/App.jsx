@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./pages/Home.jsx";
-import Orders from "./pages/Orders.jsx";
+import Home from "./pages/home.jsx";
+import Orders from "./pages/orders.jsx";
 
 export default function App() {
   return (

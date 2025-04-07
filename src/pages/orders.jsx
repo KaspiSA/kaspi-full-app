@@ -1,64 +1,65 @@
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-import { useEffect, useState } from "react";
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [labels, setLabels] = useState([]);
+  const [sums, setSums] = useState([]);
 
   useEffect(() => {
     fetch("/api/kaspi-orders")
       .then((res) => res.json())
       .then((data) => {
-        if (data?.data) {
-          setOrders(data.data);
-        } else {
-          setError("Ошибка загрузки заказов");
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("Ошибка при загрузке");
-        setLoading(false);
+        setOrders(data.orders || []);
+        const grouped = {};
+        (data.orders || []).forEach((o) => {
+          const d = new Date(o.creationDate).toLocaleDateString();
+          grouped[d] = (grouped[d] || 0) + o.totalPrice;
+        });
+        setLabels(Object.keys(grouped));
+        setSums(Object.values(grouped));
       });
   }, []);
 
-  if (loading) return <p>Загрузка заказов...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
     <div style={{ padding: 20 }}>
-      <h1>Список заказов</h1>
-      <table border="1" cellPadding="8" style={{ width: "100%", marginTop: 20 }}>
-        <thead>
-          <tr>
-            <th>Код</th>
-            <th>Имя клиента</th>
-            <th>Телефон</th>
-            <th>Адрес</th>
-            <th>Сумма</th>
-            <th>Статус</th>
-            <th>Дата</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => {
-            const o = order.attributes;
-            const d = new Date(o.creationDate).toLocaleString();
-            return (
-              <tr key={order.id}>
-                <td>{o.code}</td>
-                <td>{o.customer?.firstName} {o.customer?.lastName}</td>
-                <td>{o.customer?.cellPhone}</td>
-                <td>{o.deliveryAddress?.formattedAddress || "–"}</td>
-                <td>{o.totalPrice} ₸</td>
-                <td>{o.status}</td>
-                <td>{d}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <h1>📦 Заказы</h1>
+      {orders.length === 0 ? (
+        <p>Загрузка заказов...</p>
+      ) : (
+        <>
+          <Line
+            data={{
+              labels,
+              datasets: [
+                {
+                  label: "Доход по дням",
+                  data: sums,
+                },
+              ],
+            }}
+          />
+          <ul>
+            {orders.map((order, i) => (
+              <li key={i}>
+                <b>{order.customer?.firstName}</b> — {order.totalPrice} ₸ ({order.status})
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
